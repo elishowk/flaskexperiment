@@ -1,0 +1,19 @@
+CommOnEcoute Server
+===================
+
+A Python 2.6 RESTful web server using Riak distributed database.
+
+Documentation
+-------------
+
+TODO
+
+Source code
+-----------
+
+    https://github.com/CommOnEcoute/COEserver
+
+Author
+-------
+
+- elias showk <elishowk (at) nonutc (dot) fr>
