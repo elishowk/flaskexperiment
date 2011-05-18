@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2011 CommOnEcoute
+# Copyright (c) 2011 CommOnEcoute http://commonecoute.com
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published by
@@ -13,6 +13,7 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
+from commonecouteserver.data import Concert, Event, User, Post, Product, Genre
 from bottle import Bottle
 coes = Bottle()
 
