@@ -14,13 +14,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
     
 import commonecouteserver
-import bottle
-from bottle import run
-bottle.debug(True)
 
 import argparse 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Development COE server script')
     #parser.add_argument('debug', help='activate bottle debug mode')
-    run(commonecouteserver.coeserver, host='localhost', port=8080)
+    commonecouteserver.runserver()

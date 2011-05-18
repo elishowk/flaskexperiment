@@ -30,16 +30,19 @@ class GenericBucket(object):
             object.add_link(linked_object)
             linked_object.add_link(object)
 
-    def create(self, key, data, links=[]):
+    def create(self, data, links=[]):
         """
         Supply a key to store data under
         The 'data' can be any data Python's 'json' encoder can handle.
         """
-        new_object = self.bucket.new(key, data=data)
+        if 'id_txt' not in data:
+            raise Exception("missing id_txt in data sent")
+        new_object = self.bucket.new(data['id_txt'], data=data)
         # eventually links to other objects
         self._add_links(new_object, links)
         # Save the object to Riak.
         new_object.store()
+        return data['id_txt']
         
     def read(self, key):
         return self.bucket.get(key).get_data()

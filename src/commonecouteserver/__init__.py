@@ -14,9 +14,10 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
 from commonecouteserver.data import Concert, Event, User, Post, Product, Genre
-from bottle import Bottle
+import bottle
+bottle.debug(True)
 
-coeserver = Bottle()
+coeserver = bottle.Bottle()
 
 coebuckets={
     'concert': Concert(),
@@ -45,37 +46,37 @@ def get_post(id):
     return coebuckets['post'].read(id)
 
 @coeserver.get('/genre/:id')
-def get_concert(id):
+def get_genre(id):
     return coebuckets['genre'].read(id)
     
 @coeserver.get('/product/:id')
-def get_event(id):
+def get_product(id):
     return coebuckets['product'].read(id)
     
 # POST handlers
-@coeserver.post('/concert/:id')
-def post_concert(id):
-    return coebuckets['concert'].create(id, request.forms.dict)
+@coeserver.post('/concert/')
+def post_concert():
+    return coebuckets['concert'].create(request.forms.dict)
     
-@coeserver.post('/event/:id')
-def post_event(id):
-    return coebuckets['event'].create(id, request.forms.dict)
+@coeserver.post('/event/')
+def post_event():
+    return coebuckets['event'].create(request.forms.dict)
     
-@coeserver.post('/user/:id')
-def post_user(id):
-    return coebuckets['user'].create(id, request.forms.dict)
+@coeserver.post('/user/')
+def post_user():
+    return coebuckets['user'].create(request.forms.dict)
     
-@coeserver.post('/post/:id')
-def post_post(id):
-    return coebuckets['post'].create(id, request.forms.dict)
+@coeserver.post('/post/')
+def post_post():
+    return coebuckets['post'].create(request.forms.dict)
 
-@coeserver.post('/genre/:id')
-def post_genre(id):
-    return coebuckets['genre'].create(id, request.forms.dict)
+@coeserver.post('/genre/')
+def post_genre():
+    return coebuckets['genre'].create(request.forms.dict)
     
-@coeserver.post('/product/:id')
-def post_product(id):
-    return coebuckets['product'].create(id, request.forms.dict)
+@coeserver.post('/product/')
+def post_product():
+    return coebuckets['product'].create(request.forms.dict)
     
 # PUT handlers
 @coeserver.put('/concert/:id')
@@ -125,4 +126,7 @@ def delete_genre(id):
     
 @coeserver.delete('/product/:id')
 def delete_product(id):
-    return coebuckets['product'].delete(id)
+    return coebuckets['product'].delete(id)  
+ 
+def runserver(*args, **kwargs):
+    bottle.run(coeserver, host='localhost', port=8080)
