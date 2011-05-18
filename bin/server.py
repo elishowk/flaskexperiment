@@ -15,10 +15,12 @@
     
 import commonecouteserver
 import bottle
-bottle.debug(True)
 from bottle import run
-import logging
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
+bottle.debug(True)
+
+import argparse 
 
 if __name__ == "__main__":
-    run(commonecouteserver.coes, host='localhost', port=8080)
+    parser = argparse.ArgumentParser(description='Development COE server script')
+    #parser.add_argument('debug', help='activate bottle debug mode')
+    run(commonecouteserver.coeserver, host='localhost', port=8080)
