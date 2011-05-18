@@ -16,13 +16,13 @@
 import riak
 
 class GenericBucket(object):
-    def __init__(self, bucketname, port=8070):
+    def __init__(self, bucketname, port=8087):
         """
         Connects to a particular bucket
         on the defaut port of riak protobuf interface
         """
         self.client = riak.RiakClient(port=port, transport_class=riak.RiakPbcTransport)
-        self.bucket = client.bucket(bucketname)
+        self.bucket = self.client.bucket(bucketname)
 
     def _add_links(self, object, links):
         for linked_key in links:
