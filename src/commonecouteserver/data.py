@@ -15,6 +15,7 @@
 
 from bottle import abort
 import riak
+import uuid
 
 class GenericBucket(object):
     def __init__(self, bucketname, port=8087):
@@ -46,12 +47,12 @@ class GenericBucket(object):
     def create(self, data, links=[]):
         """
         Supply a key to store data under
-        The 'data' can be any data Python's 'json' encoder can handle.
+        The 'data' can be any data Python's 'json' encoder can handle
+        Except unicode values with protobuf
         """
         try:
             if 'id_txt' not in data:
-                abort(400, "missing id_txt in data sent : %s"%data)
-                return
+                data['id_txt'] = uuid.uuid4()
             encodeddata = self._encode(data)
             new_object = self.bucket.new(encodeddata['id_txt'], data=encodeddata)
             # eventually links to other objects
@@ -65,7 +66,6 @@ class GenericBucket(object):
         response = self.bucket.get(key).get_data()
         if response is None:
             abort(404, "object not found in database")
-            return
         else:
             return response
         
@@ -77,7 +77,6 @@ class GenericBucket(object):
             update_object = self.bucket.get(key)
             if update_object is None:
                 abort(404, "object not found in database")
-                return
             old_data = update_object.get_data()
             data = old_data.update(update_data)
             update_object.set_data(self._encode(data))
@@ -93,7 +92,6 @@ class GenericBucket(object):
             response = self.bucket.get(key).get_data()
             if response is None:
                 abort(404, "object not found in database")
-                return
             else:
                 response.delete()
         except Exception, exc:
