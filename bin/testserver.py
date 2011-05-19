@@ -17,7 +17,7 @@ import commonecouteserver
 import unittest
 from webtest import TestApp
 import webob
-
+import json
 
 class COEserverTestCase(unittest.TestCase):
     data = {
@@ -28,14 +28,14 @@ class COEserverTestCase(unittest.TestCase):
         self.c = TestApp(commonecouteserver.coeserver)
         
     def test_create(self):
-        response = self.c.post('/user/', self.data['user'],
-                               {'Content-Type':'application/json'})
+        response = self.c.post('/user/', json.dumps(self.data['user']),
+                            {'Content-Type':'application/json'})
         print response.json
         self.assertTrue( isinstance( response, webob.Response) )
         
     def test_read(self):
         response = self.c.get('/user/'+self.data['user']['id_txt']+'/',
-                              {'Content-Type':'application/json'})
+                            {}, {'Content-Type':'application/json'})
         print response.json
         self.assertTrue( isinstance( response, webob.Response) )
 
