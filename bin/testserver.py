@@ -18,7 +18,7 @@ import unittest
 from webtest import TestApp
 import webob
 import json
-import datetime
+from datetime import datetime
 
 class COEserverTestCase(unittest.TestCase):
     data = {
@@ -88,18 +88,17 @@ class COEserverTestCase(unittest.TestCase):
         self.c = TestApp(commonecouteserver.coeserver)
         
     def test_create(self):
-        response = self.c.post('/user/', json.dumps(self.data['user']),
-                            {'Content-Type':'application/json'})
-        self.assertTrue( isinstance( response, webob.Response) )
+        for bucket, record in self.data.iteritems():
+            response = self.c.post('/%s/'%bucket, json.dumps(record),
+                                {'Content-Type':'application/json'})
+            assert response.status == "200 OK"
         
     def test_read(self):
-        response = self.c.get('/user/'+self.data['user']['id_txt']+'/',
-                            {}, {'Content-Type':'application/json', 'Accept': 'application/json'})
-        print response.json
-        self.assertTrue( isinstance( response, webob.Response) )
-
-    def tearDown(self):
-        pass
+        for bucket, record in self.data.iteritems():
+            response = self.c.get('/%s/%s/'%(bucket, record['id_txt']),
+                                {}, {'Accept': 'application/json'})
+            data = response.json
+            assert data == record
 
 if __name__ == '__main__':
     unittest.main()
