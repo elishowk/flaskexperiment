@@ -30,12 +30,11 @@ class COEserverTestCase(unittest.TestCase):
     def test_create(self):
         response = self.c.post('/user/', json.dumps(self.data['user']),
                             {'Content-Type':'application/json'})
-        print response.json
         self.assertTrue( isinstance( response, webob.Response) )
         
     def test_read(self):
         response = self.c.get('/user/'+self.data['user']['id_txt']+'/',
-                            {}, {'Content-Type':'application/json'})
+                            {}, {'Content-Type':'application/json', 'Accept': 'application/json'})
         print response.json
         self.assertTrue( isinstance( response, webob.Response) )
 
