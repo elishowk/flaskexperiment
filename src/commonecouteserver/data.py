@@ -25,6 +25,18 @@ class GenericBucket(object):
         self.client = riak.RiakClient(port=port, transport_class=riak.RiakPbcTransport)
         self.bucket = self.client.bucket(bucketname)
 
+    def _encode(self, data):
+        """
+        on the fly encoding
+        """
+        encodeddata = {}
+        for (key, value) in data.iteritems():
+            if isinstance(value, unicode):
+                encodeddata[key] = value.encode('utf-8', errors='replace')
+            else:
+                encodeddata[key] = value
+        return encodeddata
+
     def _add_links(self, object, links):
         for linked_key in links:
             linked_object = self.bucket.get(linked_key)
@@ -36,14 +48,18 @@ class GenericBucket(object):
         Supply a key to store data under
         The 'data' can be any data Python's 'json' encoder can handle.
         """
-        if 'id_txt' not in data:
-            abort(400, "missing id_txt in data sent : %s"%data)
-            return
-        new_object = self.bucket.new(data['id_txt'], data=data)
-        # eventually links to other objects
-        self._add_links(new_object, links)
-        # Save the object to Riak.
-        new_object.store()
+        try:
+            if 'id_txt' not in data:
+                abort(400, "missing id_txt in data sent : %s"%data)
+                return
+            encodeddata = self._encode(data)
+            new_object = self.bucket.new(encodeddata['id_txt'], data=encodeddata)
+            # eventually links to other objects
+            self._add_links(new_object, links)
+            # Save the object to Riak.
+            new_object.store()
+        except Exception, exc:
+            abort(501, "error occured during data creation : %s"%exc)
         
     def read(self, key):
         response = self.bucket.get(key).get_data()
@@ -54,20 +70,34 @@ class GenericBucket(object):
             return response
         
     def update(self, key, update_data, links=[]):
-        update_object = self.bucket.get(key)
-        if update_object is None:
-            abort(404, "object not found in database")
-            return
-        old_data = update_object.get_data()
-        data = old_data.update(update_data)
-        update_object.set_data(data)
-        self._add_links(update_object, links)
-        #update_object.store()
-        return update_object.get_data()
+        """
+        Gets an updates an item for database
+        """
+        try:
+            update_object = self.bucket.get(key)
+            if update_object is None:
+                abort(404, "object not found in database")
+                return
+            old_data = update_object.get_data()
+            data = old_data.update(update_data)
+            update_object.set_data(self._encode(data))
+            # eventually links to other objects
+            self._add_links(update_object, links)
+            #update_object.store()
+            return update_object.get_data()
+        except Exception, exc:
+            abort(501, "error occured during data update : %s"%exc)
 
     def delete(self, key):
-        item = self.read(key)
-        item.delete()
+        try:
+            response = self.bucket.get(key).get_data()
+            if response is None:
+                abort(404, "object not found in database")
+                return
+            else:
+                response.delete()
+        except Exception, exc:
+            abort(501, "error occured during data deletion : %s"%exc)
         
 class Concert(GenericBucket):
     def __init__(self, *args, **kwargs):
