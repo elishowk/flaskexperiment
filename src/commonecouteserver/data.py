@@ -37,14 +37,13 @@ class GenericBucket(object):
         The 'data' can be any data Python's 'json' encoder can handle.
         """
         if 'id_txt' not in data:
-            abort(400, "missing id_txt in data sent")
+            abort(400, "missing id_txt in data sent : %s"%data)
             return
         new_object = self.bucket.new(data['id_txt'], data=data)
         # eventually links to other objects
         self._add_links(new_object, links)
         # Save the object to Riak.
         new_object.store()
-        return data['id_txt']
         
     def read(self, key):
         response = self.bucket.get(key).get_data()
