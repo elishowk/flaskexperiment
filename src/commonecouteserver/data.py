@@ -13,6 +13,7 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
+from bottle import abort
 import riak
 
 class GenericBucket(object):
@@ -36,7 +37,8 @@ class GenericBucket(object):
         The 'data' can be any data Python's 'json' encoder can handle.
         """
         if 'id_txt' not in data:
-            raise Exception("missing id_txt in data sent")
+            abort(400, "missing id_txt in data sent")
+            return
         new_object = self.bucket.new(data['id_txt'], data=data)
         # eventually links to other objects
         self._add_links(new_object, links)
@@ -45,18 +47,28 @@ class GenericBucket(object):
         return data['id_txt']
         
     def read(self, key):
-        return self.bucket.get(key).get_data()
+        response = self.bucket.get(key).get_data()
+        if response is None:
+            abort(404, "object not found in database")
+            return
+        else:
+            return response
         
     def update(self, key, update_data, links=[]):
         update_object = self.bucket.get(key)
+        if update_object is None:
+            abort(404, "object not found in database")
+            return
         old_data = update_object.get_data()
         data = old_data.update(update_data)
         update_object.set_data(data)
         self._add_links(update_object, links)
         #update_object.store()
-        
+        return update_object.get_data()
+
     def delete(self, key):
-        self.read(key).delete()
+        item = self.read(key)
+        item.delete()
         
 class Concert(GenericBucket):
     def __init__(self, *args, **kwargs):
