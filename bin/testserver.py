@@ -29,12 +29,13 @@ class COEserverTestCase(unittest.TestCase):
         self.c = Client(commonecouteserver.coeserver, BaseResponse)
         
     def test_create(self):
-        response = self.c.post(path='user/', data=self.data['user'])
-        print response.response
+        response = self.c.post(path='user/', data=self.data['user'], base_url='http://localhost:8080', content_type='application/json')
+        print response.data
+        self.assertTrue( isinstance( response, BaseResponse) )
         
     def test_read(self):
-        response = self.c.get(path='user/'+self.data['user']['id_txt'], content_type='application/json')
-        print response.response
+        response = self.c.get(path='user/'+self.data['user']['id_txt']+'/', base_url='http://localhost:8080', content_type='application/json')
+        print response.data
         self.assertTrue( isinstance( response, BaseResponse) )
 
     def tearDown(self):
