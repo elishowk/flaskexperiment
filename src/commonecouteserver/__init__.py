@@ -19,6 +19,7 @@ import bottle
 bottle.DEBUG = True
 from bottle import request, response
 from bottle.ext import werkzeug
+import json
 
 coeserver = bottle.Bottle()
 werkzplugin = werkzeug.Plugin()
@@ -36,6 +37,13 @@ coebuckets={
     'product': Product(),
     'genre': Genre()
 }
+
+def _request_body(request):
+    data = request.body.readline()
+    print data
+    if not data:
+        abort(400, 'No data received')
+    return json.loads(data)
 
 # GET handlers
 @coeserver.get('/concert/:id/')
@@ -65,52 +73,52 @@ def get_product(id):
 # POST handlers
 @coeserver.post('/concert/')
 def post_concert():
-    return coebuckets['concert'].create(request.forms.dict)
+    coebuckets['concert'].create(_request_body(request))
     
 @coeserver.post('/event/')
 def post_event():
-    return coebuckets['event'].create(request.forms.dict)
+    coebuckets['event'].create(_request_body(request))
     
 @coeserver.post('/user/')
 def post_user():
-    return coebuckets['user'].create(request.forms.dict)
+    coebuckets['user'].create(_request_body(request))
     
 @coeserver.post('/post/')
 def post_post():
-    return coebuckets['post'].create(request.forms.dict)
+    coebuckets['post'].create(_request_body(request))
 
 @coeserver.post('/genre/')
 def post_genre():
-    return coebuckets['genre'].create(request.forms.dict)
+    coebuckets['genre'].create(_request_body(request))
     
 @coeserver.post('/product/')
 def post_product():
-    return coebuckets['product'].create(request.forms.dict)
+    coebuckets['product'].create(_request_body(request))
     
 # PUT handlers
 @coeserver.put('/concert/:id/')
 def put_concert(id):
-    return coebuckets['concert'].update(id, request.forms.dict)
+    return coebuckets['concert'].update(id, _request_body(request))
     
 @coeserver.put('/event/:id/')
 def put_event(id):
-    return coebuckets['event'].update(id, request.forms.dict)
+    return coebuckets['event'].update(id, _request_body(request))
     
 @coeserver.put('/user/:id/')
 def put_user(id):
-    return coebuckets['user'].update(id, request.forms.dict)
+    return coebuckets['user'].update(id, _request_body(request))
     
 @coeserver.put('/post/:id/')
 def put_post(id):
-    return coebuckets['post'].update(id, request.forms.dict)
+    return coebuckets['post'].update(id, _request_body(request))
 
 @coeserver.put('/genre/:id/')
 def put_genre(id):
-    return coebuckets['genre'].update(id, request.forms.dict)
+    return coebuckets['genre'].update(id, _request_body(request))
     
 @coeserver.put('/product/:id/')
 def put_product(id):
-    return coebuckets['product'].update(id, request.forms.dict)
+    return coebuckets['product'].update(id, _request_body(request))
     
 # DELETE handlers
 @coeserver.delete('/concert/:id/')
