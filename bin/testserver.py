@@ -15,9 +15,8 @@
     
 import commonecouteserver
 import unittest
-    
-from werkzeug.test import Client
-from werkzeug.wrappers import BaseResponse
+from webtest import TestApp
+import webob
 
 
 class COEserverTestCase(unittest.TestCase):
@@ -26,17 +25,19 @@ class COEserverTestCase(unittest.TestCase):
     }
 
     def setUp(self):
-        self.c = Client(commonecouteserver.coeserver, BaseResponse)
+        self.c = TestApp(commonecouteserver.coeserver)
         
     def test_create(self):
-        response = self.c.post(path='user/', data=self.data['user'], base_url='http://localhost:8080', content_type='application/json')
-        print response.data
-        self.assertTrue( isinstance( response, BaseResponse) )
+        response = self.c.post('/user/', self.data['user'],
+                               {'Content-Type':'application/json'})
+        print response.json
+        self.assertTrue( isinstance( response, webob.Response) )
         
     def test_read(self):
-        response = self.c.get(path='user/'+self.data['user']['id_txt']+'/', base_url='http://localhost:8080', content_type='application/json')
-        print response.data
-        self.assertTrue( isinstance( response, BaseResponse) )
+        response = self.c.get('/user/'+self.data['user']['id_txt']+'/',
+                              {'Content-Type':'application/json'})
+        print response.json
+        self.assertTrue( isinstance( response, webob.Response) )
 
     def tearDown(self):
         pass
