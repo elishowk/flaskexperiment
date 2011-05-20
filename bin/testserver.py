@@ -19,6 +19,7 @@ from webtest import TestApp
 import webob
 import json
 from datetime import datetime
+import urllib
 
 class COEserverTestCase(unittest.TestCase):
     data = {
@@ -93,7 +94,7 @@ class COEserverTestCase(unittest.TestCase):
         POST records
         """
         for bucket, record in self.data.iteritems():
-            response = self.c.post('/%s/'%bucket, json.dumps(record),
+            response = self.c.post('/%s'%bucket, json.dumps(record),
                                 {'Content-Type':'application/json'})
             assert response.status == "200 OK"
         
@@ -102,8 +103,8 @@ class COEserverTestCase(unittest.TestCase):
         GET initial records
         """
         for bucket, record in self.data.iteritems():
-            response = self.c.get('/%s/%s/'%(bucket, record['id_txt']),
-                                {}, {'Accept': 'application/json'})
+            response = self.c.get('/%s/%s'%(bucket, urllib.quote_plus(record['id_txt'])),
+                                {'Accept': 'application/json'})
             data = response.json
             assert data == record
 
