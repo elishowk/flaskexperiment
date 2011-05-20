@@ -17,6 +17,9 @@ from bottle import abort
 import riak
 import uuid
 
+import logging
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
+
 class GenericBucket(object):
     def __init__(self, bucketname, port=8087):
         """
@@ -24,6 +27,8 @@ class GenericBucket(object):
         on the defaut port of riak protobuf interface
         """
         self.client = riak.RiakClient(port=port, transport_class=riak.RiakPbcTransport)
+        #self.client.set_r(1)
+        #self.client.set_w(1)
         self.bucket = self.client.bucket(bucketname)
 
     def _encode(self, data):
@@ -50,9 +55,11 @@ class GenericBucket(object):
         The 'data' can be any data Python's 'json' encoder can handle
         Except unicode values with protobuf
         """
+        if not self.client.is_alive():
+            abort(501, "database is dead")
         try:
             if 'id_txt' not in data:
-                data['id_txt'] = uuid.uuid4()
+                data['id_txt'] = "%s"%uuid.uuid4()
             encodeddata = self._encode(data)
             new_object = self.bucket.new(encodeddata['id_txt'], data=encodeddata)
             # eventually links to other objects
@@ -97,9 +104,9 @@ class GenericBucket(object):
         except Exception, exc:
             abort(501, "error occured during data deletion : %s"%exc)
         
-class Concert(GenericBucket):
+class Track(GenericBucket):
     def __init__(self, *args, **kwargs):
-        GenericBucket.__init__(self, "concert", *args, **kwargs)
+        GenericBucket.__init__(self, "track", *args, **kwargs)
         
 class Event(GenericBucket):
     def __init__(self, *args, **kwargs):
@@ -120,4 +127,7 @@ class Product(GenericBucket):
 class Genre(GenericBucket):
     def __init__(self, *args, **kwargs):
         GenericBucket.__init__(self, "genre", *args, **kwargs)
- 
+
+class Artist(GenericBucket):
+    def __init__(self, *args, **kwargs):
+        GenericBucket.__init__(self, "artist", *args, **kwargs)
