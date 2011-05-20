@@ -13,7 +13,7 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
-from commonecouteserver.data import Concert, Event, User, Post, Product, Genre
+from commonecouteserver.data import Track, Event, User, Post, Product, Genre, Artist
 
 import bottle
 bottle.DEBUG = True
@@ -28,27 +28,30 @@ werkzplugin.evalex = True
 coeserver.install(werkzplugin)
 
 #werkzeugreq = werkzplugin.request # For the lazy.
+import logging
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
 
 coebuckets={
-    'concert': Concert(),
+    'track': Track(),
     'event': Event(),
     'user': User(),
     'post': Post(),
     'product': Product(),
-    'genre': Genre()
+    'genre': Genre(),
+    'artist': Artist()
 }
 
 def _request_body(request):
     data = request.body.readline()
-    print data
+    logging.debug("decoding request body : %s"%data)
     if not data:
         abort(400, 'No data received')
     return json.loads(data)
 
 # GET handlers
-@coeserver.get('/concert/:id/')
-def get_concert(id):
-    return coebuckets['concert'].read(id)
+@coeserver.get('/track/:id/')
+def get_track(id):
+    return coebuckets['track'].read(id)
     
 @coeserver.get('/event/:id/')
 def get_event(id):
@@ -69,11 +72,15 @@ def get_genre(id):
 @coeserver.get('/product/:id/')
 def get_product(id):
     return coebuckets['product'].read(id)
-    
+ 
+@coeserver.get('/artist/:id/')
+def get_artist(id):
+    return coebuckets['artist'].read(id)
+   
 # POST handlers
-@coeserver.post('/concert/')
-def post_concert():
-    coebuckets['concert'].create(_request_body(request))
+@coeserver.post('/track/')
+def post_track():
+    coebuckets['track'].create(_request_body(request))
     
 @coeserver.post('/event/')
 def post_event():
@@ -95,10 +102,14 @@ def post_genre():
 def post_product():
     coebuckets['product'].create(_request_body(request))
     
+@coeserver.post('/artist/')
+def post_artist():
+    return coebuckets['artist'].create(_request_body(request))
+    
 # PUT handlers
-@coeserver.put('/concert/:id/')
-def put_concert(id):
-    return coebuckets['concert'].update(id, _request_body(request))
+@coeserver.put('/track/:id/')
+def put_track(id):
+    return coebuckets['track'].update(id, _request_body(request))
     
 @coeserver.put('/event/:id/')
 def put_event(id):
@@ -119,11 +130,15 @@ def put_genre(id):
 @coeserver.put('/product/:id/')
 def put_product(id):
     return coebuckets['product'].update(id, _request_body(request))
-    
+
+@coeserver.put('/artist/:id/')
+def put_artist(id):
+    return coebuckets['artist'].update(id, _request_body(request))
+  
 # DELETE handlers
-@coeserver.delete('/concert/:id/')
-def delete_concert(id):
-    coebuckets['concert'].delete(id)
+@coeserver.delete('/track/:id/')
+def delete_track(id):
+    coebuckets['track'].delete(id)
     
 @coeserver.delete('/event/:id/')
 def delete_event(id):
@@ -144,6 +159,10 @@ def delete_genre(id):
 @coeserver.delete('/product/:id/')
 def delete_product(id):
     coebuckets['product'].delete(id)  
- 
+
+@coeserver.delete('/artist/:id/')
+def delete_artist(id):
+    coebuckets['artist'].delete(id)  
+
 def runserver(*args, **kwargs):
     bottle.run(coeserver, host='localhost', port=8080)

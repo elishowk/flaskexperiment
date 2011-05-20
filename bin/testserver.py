@@ -22,21 +22,21 @@ from datetime import datetime
 
 class COEserverTestCase(unittest.TestCase):
     data = {
-        'concert': {
-            'id_txt': "http://commonecoute.com/urlconcertunique.html",
-            'views': 0,
-            'video': "http://commonecoute.com/videoembedurl.mkv",
-            'links_event': ["http://commonecoute.com/urleventunique.html"]
-        },
         'event': {
             'id_txt': "http://commonecoute.com/urleventunique.html",
+            'link_track': ["http://commonecoute.com/urltrackunique.html"]
+        },
+        'track': {
+            'id_txt': "http://commonecoute.com/urltrackunique.html",
             'title_txt': "Amon Tobin presents ISAM @ Le Bataclan, Paris",
-            'image': "http://commonecoute.com/assets/images/event/0125.png",
+            'views': 0,
+            'video': "http://commonecoute.com/videoembedurl.mkv",
+            'image': "http://commonecoute.com/assets/images/track/0125.png",
             'location_txt': "Le Bataclan, Paris",
             'overview_txt': "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
             'link_product': ["http://commonecoute.com/urlproduct1.html", "http://commonecoute.com/urlproduct2.html"],
             'link_user': ["labsynth@gmail.com"],
-            'link_event': ["http://commonecoute.com/urleventunique2.html"],
+            'link_track': ["http://commonecoute.com/urltrackunique2.html"],
             'start_date': str(datetime.utcnow().isoformat()),
             'end_date': str(datetime.now().isoformat()),
             'link_artist': ["http://commonecoute.com/urlartistunique.html", "http://commonecoute.com/urlartistunique2.html"],
@@ -76,8 +76,9 @@ class COEserverTestCase(unittest.TestCase):
         },
         'post':  {
             #'id_txt': generated uuid4
-            'link_event': ["http://commonecoute.com/urleventunique.html"],
-            'timing_date': str(datetime.utcnow().isoformat()),
+            'link_track': ["http://commonecoute.com/urltrackunique.html"],
+            'timingstart_date': str(datetime.utcnow().isoformat()),
+            'timingend_date': str(datetime.utcnow().isoformat()),
             'votes': 0,
             'link_user': ['elishowk@nonutc.fr'],
             'content_txt': "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"
@@ -87,13 +88,19 @@ class COEserverTestCase(unittest.TestCase):
     def setUp(self):
         self.c = TestApp(commonecouteserver.coeserver)
         
-    def test_create(self):
+    def test_1create(self):
+        """
+        POST records
+        """
         for bucket, record in self.data.iteritems():
             response = self.c.post('/%s/'%bucket, json.dumps(record),
                                 {'Content-Type':'application/json'})
             assert response.status == "200 OK"
         
-    def test_read(self):
+    def test_2read(self):
+        """
+        GET initial records
+        """
         for bucket, record in self.data.iteritems():
             response = self.c.get('/%s/%s/'%(bucket, record['id_txt']),
                                 {}, {'Accept': 'application/json'})
