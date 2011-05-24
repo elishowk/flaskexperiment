@@ -13,7 +13,7 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
-from flask import abort
+from flask import abort, jsonify
 import riak
 import uuid
 import datetime
@@ -68,11 +68,11 @@ class GenericBucket(object):
             abort(501, "error occured during data creation : %s"%exc)
         
     def read(self, key):
-        response = self.bucket.get(key).get_data()
+        response = self.bucket.get(key.encode('utf-8', errors='replace')).get_data()
         if response is None:
             abort(404, "object not found in database")
         else:
-            return response
+            return jsonify(response)
         
     def update(self, key, update_data, links=[]):
         """
@@ -88,7 +88,7 @@ class GenericBucket(object):
             # eventually links to other objects
             self._add_links(update_object, links)
             #update_object.store()
-            return update_object.get_data()
+            return jsonify(update_object.get_data())
         except Exception, exc:
             abort(501, "error occured during data update : %s"%exc)
 

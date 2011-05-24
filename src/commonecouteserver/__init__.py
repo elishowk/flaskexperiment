@@ -15,7 +15,7 @@
 
 from commonecouteserver.data import Track, Event, User, Post, Product, Genre, Artist
 
-from flask import Flask, abort, jsonify, json
+from flask import Flask, request
 coeserver = Flask(__name__)
 
 import logging
@@ -37,7 +37,7 @@ def _request_body(request):
 @coeserver.after_request
 def after_request(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
-    return jsonify(response)
+    return response
     
 #@coeserver.before_request
 #def before_request():
@@ -46,7 +46,7 @@ def after_request(response):
 # default handler
 @coeserver.route('/*', methods=['GET','POST','PUT','DELETE'])
 def default():
-    return {}
+    return jsonify({})
     
 # GET handlers
 @coeserver.route('/track/<id>/', methods=['GET'])
@@ -104,7 +104,7 @@ def post_product():
     
 @coeserver.route('/artist/', methods=['POST'])
 def post_artist():
-    return coebuckets['artist'].create(_request_body(request))
+    coebuckets['artist'].create(_request_body(request))
     
 # PUT handlers
 @coeserver.route('/track/<id>/', methods=['PUT'])
