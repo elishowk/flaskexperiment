@@ -13,11 +13,11 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
     
-import commonecouteserver
-
+from commonecouteserver import coeserver
 import argparse 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Development COE server script')
     #parser.add_argument('debug', help='activate bottle debug mode')
-    commonecouteserver.runserver()
+    coeserver.debug = True
+    coeserver.run()
