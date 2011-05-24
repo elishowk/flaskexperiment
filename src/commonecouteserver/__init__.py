@@ -15,21 +15,11 @@
 
 from commonecouteserver.data import Track, Event, User, Post, Product, Genre, Artist
 
-import bottle
-bottle.DEBUG = True
-from bottle import request, response
-from bottle.ext import werkzeug
-import json
+from flask import Flask, abort, jsonify, json
+coeserver = Flask(__name__)
 
-coeserver = bottle.Bottle()
-werkzplugin = werkzeug.Plugin()
-werkzplugin.evalex = True
-
-coeserver.install(werkzplugin)
-
-#werkzeugreq = werkzplugin.request # For the lazy.
 import logging
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
+logging.basicConfig(format='%(levelname)s - %(asctime)s - %(message)s', level=logging.DEBUG)
 
 coebuckets={
     'track': Track(),
@@ -42,127 +32,134 @@ coebuckets={
 }
 
 def _request_body(request):
-    data = request.body.readline()
-    logging.debug("decoding request body : %s"%data)
-    if not data:
-        abort(400, 'No data received')
-    return json.loads(data)
+    return request.json
 
+@coeserver.after_request
+def after_request(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return jsonify(response)
+    
+#@coeserver.before_request
+#def before_request():
+#    response.headers['Access-Control-Allow-Origin'] = '*'
+    
+# default handler
+@coeserver.route('/*', methods=['GET','POST','PUT','DELETE'])
+def default():
+    return {}
+    
 # GET handlers
-@coeserver.get('/track/:id')
+@coeserver.route('/track/<id>/', methods=['GET'])
 def get_track(id):
     return coebuckets['track'].read(id)
     
-@coeserver.get('/event/:id')
+@coeserver.route('/event/<id>/', methods=['GET'])
 def get_event(id):
     return coebuckets['event'].read(id)
     
-@coeserver.get('/user/:id')
+@coeserver.route('/user/<id>/', methods=['GET'])
 def get_user(id):
     return coebuckets['user'].read(id)
     
-@coeserver.get('/post/:id')
+@coeserver.route('/post/<id>/', methods=['GET'])
 def get_post(id):
     return coebuckets['post'].read(id)
 
-@coeserver.get('/genre/:id')
+@coeserver.route('/genre/<id>/', methods=['GET'])
 def get_genre(id):
     return coebuckets['genre'].read(id)
     
-@coeserver.get('/product/:id')
+@coeserver.route('/product/<id>/', methods=['GET'])
 def get_product(id):
     return coebuckets['product'].read(id)
  
-@coeserver.get('/artist/:id')
+@coeserver.route('/artist/<id>/', methods=['GET'])
 def get_artist(id):
     return coebuckets['artist'].read(id)
    
 # POST handlers
-@coeserver.post('/track')
+@coeserver.route('/track/', methods=['POST'])
 def post_track():
     coebuckets['track'].create(_request_body(request))
     
-@coeserver.post('/event')
+@coeserver.route('/event/', methods=['POST'])
 def post_event():
     coebuckets['event'].create(_request_body(request))
     
-@coeserver.post('/user')
+@coeserver.route('/user/', methods=['POST'])
 def post_user():
     coebuckets['user'].create(_request_body(request))
     
-@coeserver.post('/post')
+@coeserver.route('/post/', methods=['POST'])
 def post_post():
     coebuckets['post'].create(_request_body(request))
 
-@coeserver.post('/genre')
+@coeserver.route('/genre/', methods=['POST'])
 def post_genre():
     coebuckets['genre'].create(_request_body(request))
     
-@coeserver.post('/product')
+@coeserver.route('/product/', methods=['POST'])
 def post_product():
     coebuckets['product'].create(_request_body(request))
     
-@coeserver.post('/artist')
+@coeserver.route('/artist/', methods=['POST'])
 def post_artist():
     return coebuckets['artist'].create(_request_body(request))
     
 # PUT handlers
-@coeserver.put('/track/:id')
+@coeserver.route('/track/<id>/', methods=['PUT'])
 def put_track(id):
     return coebuckets['track'].update(id, _request_body(request))
     
-@coeserver.put('/event/:id')
+@coeserver.route('/event/<id>/', methods=['PUT'])
 def put_event(id):
     return coebuckets['event'].update(id, _request_body(request))
     
-@coeserver.put('/user/:id')
+@coeserver.route('/user/<id>/', methods=['PUT'])
 def put_user(id):
     return coebuckets['user'].update(id, _request_body(request))
     
-@coeserver.put('/post/:id')
+@coeserver.route('/post/<id>/', methods=['PUT'])
 def put_post(id):
     return coebuckets['post'].update(id, _request_body(request))
 
-@coeserver.put('/genre/:id')
+@coeserver.route('/genre/<id>/', methods=['PUT'])
 def put_genre(id):
     return coebuckets['genre'].update(id, _request_body(request))
     
-@coeserver.put('/product/:id')
+@coeserver.route('/product/<id>/', methods=['PUT'])
 def put_product(id):
     return coebuckets['product'].update(id, _request_body(request))
 
-@coeserver.put('/artist/:id')
+@coeserver.route('/artist/<id>/', methods=['PUT'])
 def put_artist(id):
     return coebuckets['artist'].update(id, _request_body(request))
   
-# DELETE handlers
-@coeserver.delete('/track/:id')
+# DELETE HANDLERS
+@coeserver.route('/track/<id>/', methods=['DELETE'])
 def delete_track(id):
     coebuckets['track'].delete(id)
     
-@coeserver.delete('/event/:id')
+@coeserver.route('/event/<id>/', methods=['DELETE'])
 def delete_event(id):
     coebuckets['event'].delete(id)
     
-@coeserver.delete('/user/:id')
+@coeserver.route('/user/<id>/', methods=['DELETE'])
 def delete_user(id):
     coebuckets['user'].delete(id)
     
-@coeserver.delete('/post/:id')
+@coeserver.route('/post/<id>/', methods=['DELETE'])
 def delete_post(id):
     coebuckets['post'].delete(id)
 
-@coeserver.delete('/genre/:id')
+@coeserver.route('/genre/<id>/', methods=['DELETE'])
 def delete_genre(id):
     coebuckets['genre'].delete(id)
     
-@coeserver.delete('/product/:id')
+@coeserver.route('/product/<id>/', methods=['DELETE'])
 def delete_product(id):
     coebuckets['product'].delete(id)  
 
-@coeserver.delete('/artist/:id')
+@coeserver.route('/artist/<id>/', methods=['DELETE'])
 def delete_artist(id):
-    coebuckets['artist'].delete(id)  
-
-def runserver(*args, **kwargs):
-    bottle.run(coeserver, host='localhost', port=8080)
+    coebuckets['artist'].delete(id)

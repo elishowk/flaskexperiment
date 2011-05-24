@@ -13,12 +13,10 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
-from bottle import abort
+from flask import abort
 import riak
 import uuid
-
-import logging
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)-8s %(message)s")
+import datetime
 
 class GenericBucket(object):
     def __init__(self, bucketname, port=8087):
