@@ -22,6 +22,13 @@ import datetime
 class GenericBucket(object):
     def __init__(self, bucketname, port=8087):
         """
+        initiate a riak bucket
+        """
+        self.bucketname = bucketname
+        self._connect(bucketname, port)
+
+    def _connect(self, bucketname, port=8087):
+        """
         Connects to a particular bucket
         on the defaut port of riak protobuf interface
         """
@@ -29,7 +36,7 @@ class GenericBucket(object):
         #self.client.set_r(1)
         #self.client.set_w(1)
         self.bucket = self.client.bucket(bucketname)
-
+        
     def _encode(self, data):
         """
         on the fly encoding
@@ -43,6 +50,9 @@ class GenericBucket(object):
         return encodeddata
 
     def _add_links(self, object, links):
+        """
+        add links to an object given a list of identifiers
+        """
         for linked_key in links:
             linked_object = self.bucket.get(linked_key)
             object.add_link(linked_object)
@@ -51,8 +61,8 @@ class GenericBucket(object):
     def create(self, data, links=[]):
         """
         Supply a key to store data under
-        The 'data' can be any data Python's 'json' encoder can handle
-        Except unicode values with protobuf
+        The 'data' can be any data Python's 'json' encoder can handle (except unicode values with protobuf)
+        Returns the json object created
         """
         if not self.client.is_alive():
             abort(501, "database is dead")
@@ -70,6 +80,9 @@ class GenericBucket(object):
             abort(501, {"error": "%s"%exc})
         
     def read(self, key):
+        """
+        Returns json object for a given key
+        """
         try:
             response = self.bucket.get(key.encode('utf-8', errors='replace')).get_data()
             return response or abort(404, {})
@@ -79,6 +92,7 @@ class GenericBucket(object):
     def update(self, key, update_data, links=[]):
         """
         Gets an updates an item for database
+        Returns the updated json object
         """
         try:
             update_object = self.bucket.get(key)
@@ -95,6 +109,9 @@ class GenericBucket(object):
             abort(501, {"error": "%s"%exc})
 
     def delete(self, key):
+        """
+        Deletes a record
+        """
         try:
             response = self.bucket.get(key).get_data()
             if not response:

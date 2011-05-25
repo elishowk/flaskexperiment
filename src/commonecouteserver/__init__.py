@@ -43,9 +43,17 @@ def after_request(response):
         
     return response
     
-#@coeserver.before_request
-#def before_request():
-#    response.headers['Access-Control-Allow-Origin'] = '*'
+@coeserver.before_request
+def before_request():
+    """
+    checks each bucket 
+    """
+    for bucketname, bucketinstance in coebuckets.iteritems():
+        if not bucketinstance.client.is_alive():
+            try:
+                bucketinstance._connect(bucketname)
+            except Exception, exc:
+                abort(501, "%s"%exc)
     
 # default handler
 @coeserver.route('/*', methods=['GET','POST','PUT','DELETE'])
