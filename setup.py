@@ -4,14 +4,15 @@ import sys, os
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README')).read()
 
-
 version = '0.1'
 
 install_requires = [
-    'bottle',
+    'flask',
+    'flask-jsonify'
     'riak',
     'protobuf',
-    'werkzeug'
+    'werkzeug',
+    'simplejson'
     # For more details, see:
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
 ]

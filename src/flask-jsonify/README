@@ -1,0 +1,16 @@
+flask-jsonify
+
+A Flask decorator to return json objects.
+
+Install:
+
+    pip install -e 'git+http://github.com/fredj/flask-jsonify.git#egg=flask-jsonify'
+
+Usage:
+
+    from flaskext.jsonify import jsonify
+
+    @app.route('/')
+    @jsonify
+    def index():
+        return {'foo': 'bar', 'baz': [1,2,3]}

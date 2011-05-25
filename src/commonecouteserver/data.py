@@ -13,7 +13,8 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
-from flask import abort, jsonify
+from flask import abort
+
 import riak
 import uuid
 import datetime
@@ -57,22 +58,23 @@ class GenericBucket(object):
             abort(501, "database is dead")
         try:
             if 'id_txt' not in data:
-                data['id_txt'] = "%s"%uuid.uuid4()
+                data['id_txt'] = "%s::%s"%(datetime.utcnow(), uuid.uuid4())
             encodeddata = self._encode(data)
             new_object = self.bucket.new(encodeddata['id_txt'], data=encodeddata)
             # eventually links to other objects
             self._add_links(new_object, links)
             # Save the object to Riak.
-            new_object.store()
+            return new_object.store() or abort(404, {})
+            #return new_object.get_key()
         except Exception, exc:
-            abort(501, "error occured during data creation : %s"%exc)
+            abort(501, {"error": "%s"%exc})
         
     def read(self, key):
-        response = self.bucket.get(key.encode('utf-8', errors='replace')).get_data()
-        if response is None:
-            abort(404, "object not found in database")
-        else:
-            return jsonify(response)
+        try:
+            response = self.bucket.get(key.encode('utf-8', errors='replace')).get_data()
+            return response or abort(404, {})
+        except Exception, exc:
+            abort(501, {"error": "%s"%exc})        
         
     def update(self, key, update_data, links=[]):
         """
@@ -80,7 +82,7 @@ class GenericBucket(object):
         """
         try:
             update_object = self.bucket.get(key)
-            if update_object is None:
+            if not update_object:
                 abort(404, "object not found in database")
             old_data = update_object.get_data()
             data = old_data.update(update_data)
@@ -88,19 +90,19 @@ class GenericBucket(object):
             # eventually links to other objects
             self._add_links(update_object, links)
             #update_object.store()
-            return jsonify(update_object.get_data())
+            return update_object.get_data() or abort(501, {})
         except Exception, exc:
-            abort(501, "error occured during data update : %s"%exc)
+            abort(501, {"error": "%s"%exc})
 
     def delete(self, key):
         try:
             response = self.bucket.get(key).get_data()
-            if response is None:
-                abort(404, "object not found in database")
+            if not response:
+                abort(404, {})
             else:
                 response.delete()
         except Exception, exc:
-            abort(501, "error occured during data deletion : %s"%exc)
+            abort(501, {"error": "%s"%exc})
         
 class Track(GenericBucket):
     def __init__(self, *args, **kwargs):
