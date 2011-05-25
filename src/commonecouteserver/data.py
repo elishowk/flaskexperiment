@@ -13,11 +13,11 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
-from flask import abort
+from flask import abort, make_response, json
 
 import riak
 import uuid
-import datetime
+from datetime import datetime
 
 class GenericBucket(object):
     def __init__(self, bucketname, port=8087):
@@ -65,7 +65,7 @@ class GenericBucket(object):
         Returns the json object created
         """
         if not self.client.is_alive():
-            abort(501, "database is dead")
+            abort(500, "database is dead")
         try:
             if 'id_txt' not in data:
                 data['id_txt'] = "%s::%s"%(datetime.utcnow(), uuid.uuid4())
@@ -74,10 +74,11 @@ class GenericBucket(object):
             # eventually links to other objects
             self._add_links(new_object, links)
             # Save the object to Riak.
-            return new_object.store() or abort(404, {})
+            return new_object.store().get_data()
             #return new_object.get_key()
         except Exception, exc:
-            abort(501, {"error": "%s"%exc})
+            abort(500, {"error": "%s"%exc})
+            #return make_response((json.dumps({"error": "%s"%exc}), 500, None, 'application/json', 'application/json', False))
         
     def read(self, key):
         """
@@ -87,7 +88,7 @@ class GenericBucket(object):
             response = self.bucket.get(key.encode('utf-8', errors='replace')).get_data()
             return response or abort(404, {})
         except Exception, exc:
-            abort(501, {"error": "%s"%exc})        
+            abort(500, {"error": "%s"%exc})        
         
     def update(self, key, update_data, links=[]):
         """
@@ -104,9 +105,9 @@ class GenericBucket(object):
             # eventually links to other objects
             self._add_links(update_object, links)
             #update_object.store()
-            return update_object.get_data() or abort(501, {})
+            return update_object.get_data() or abort(500, {})
         except Exception, exc:
-            abort(501, {"error": "%s"%exc})
+            abort(500, {"error": "%s"%exc})
 
     def delete(self, key):
         """
@@ -119,7 +120,7 @@ class GenericBucket(object):
             else:
                 response.delete()
         except Exception, exc:
-            abort(501, {"error": "%s"%exc})
+            abort(500, {"error": "%s"%exc})
         
 class Track(GenericBucket):
     def __init__(self, *args, **kwargs):
