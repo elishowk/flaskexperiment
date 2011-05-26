@@ -58,6 +58,9 @@ class GenericBucket(object):
             object.add_link(linked_object)
             linked_object.add_link(object)
 
+    def _genUUID(self):
+        return "%s:::%s"%(datetime.utcnow().isoformat(), uuid.uuid4())
+
     def create(self, data, links=[]):
         """
         Supply a key to store data under
@@ -68,7 +71,7 @@ class GenericBucket(object):
             abort(500, "database is dead")
         try:
             if 'id_txt' not in data:
-                data['id_txt'] = "%s::%s"%(datetime.utcnow(), uuid.uuid4())
+                data['id_txt'] = self._genUUID()
             encodeddata = self._encode(data)
             new_object = self.bucket.new(encodeddata['id_txt'], data=encodeddata)
             # eventually links to other objects
