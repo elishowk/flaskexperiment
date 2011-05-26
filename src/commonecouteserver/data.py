@@ -49,7 +49,7 @@ class GenericBucket(object):
                 encodeddata[key] = value
         return encodeddata
 
-    def _add_links(self, object, links):
+    def _addLinks(self, object, links):
         """
         add links to an object given a list of identifiers
         """
@@ -58,9 +58,16 @@ class GenericBucket(object):
             object.add_link(linked_object)
             linked_object.add_link(object)
 
-    def _genUUID(self):
+    def _genID(self, data):
         return "%s:::%s"%(datetime.utcnow().isoformat(), uuid.uuid4())
 
+    def _getNewObject(self, data):
+        if self.client.get(data['id_txt']).exists():
+            abort(400, {"error": "object %s already exists, won't overwrite, please use PUT"})
+        else:
+            encodeddata = self._encode(data)
+            return self._get_new_object(encodeddata)
+        
     def create(self, data, links=[]):
         """
         Supply a key to store data under
@@ -68,14 +75,14 @@ class GenericBucket(object):
         Returns the json object created
         """
         if not self.client.is_alive():
-            abort(500, "database is dead")
+            abort(500, {"error": "database is dead"})
         try:
             if 'id_txt' not in data:
-                data['id_txt'] = self._genUUID()
-            encodeddata = self._encode(data)
-            new_object = self.bucket.new(encodeddata['id_txt'], data=encodeddata)
+                data['id_txt'] = self._genID(data)
+            
+            new_object = self._getNewObject(data)
             # eventually links to other objects
-            self._add_links(new_object, links)
+            self._addLinks(new_object, links)
             # Save the object to Riak.
             return new_object.store().get_data()
             #return new_object.get_key()
@@ -100,8 +107,8 @@ class GenericBucket(object):
         """
         try:
             update_object = self.bucket.get(key)
-            if not update_object:
-                abort(404, "object not found in database")
+            if not update_object.exists():
+                abort(404, {"error": "object not found in database"})
             old_data = update_object.get_data()
             data = old_data.update(update_data)
             update_object.set_data(self._encode(data))
@@ -118,37 +125,62 @@ class GenericBucket(object):
         """
         try:
             response = self.bucket.get(key).get_data()
-            if not response:
-                abort(404, {})
+            if not response.exists():
+                abort(404, {"error": "object not found in database"})
             else:
                 response.delete()
         except Exception, exc:
             abort(500, {"error": "%s"%exc})
         
+
 class Track(GenericBucket):
     def __init__(self, *args, **kwargs):
         GenericBucket.__init__(self, "track", *args, **kwargs)
         
+    def _genID(self, data):
+        return "%s:::%s:::%s"%(data['start_date'], data['end_date'], uuid.uuid4())
+
+ 
 class Event(GenericBucket):
     def __init__(self, *args, **kwargs):
         GenericBucket.__init__(self, "event", *args, **kwargs)
 
+    def _genID(self, data):
+        return "%s:::%s:::%s"%(data['start_date'], data['end_date'], uuid.uuid4())
+
+
 class User(GenericBucket):
     def __init__(self, *args, **kwargs):
         GenericBucket.__init__(self, "user", *args, **kwargs)
-        
+
+    def _genID(self, data):
+        return data['email_txt']
+
+
 class Post(GenericBucket):
     def __init__(self, *args, **kwargs):
         GenericBucket.__init__(self, "post", *args, **kwargs)
  
+ 
 class Product(GenericBucket):
     def __init__(self, *args, **kwargs):
         GenericBucket.__init__(self, "product", *args, **kwargs)
+    
+    def _genID(self, data):
+        return "%s"%uuid.uuid4()
+
  
 class Genre(GenericBucket):
     def __init__(self, *args, **kwargs):
         GenericBucket.__init__(self, "genre", *args, **kwargs)
+        
+    def _genID(self, data):
+        return "%s"%uuid.uuid4()
+
 
 class Artist(GenericBucket):
     def __init__(self, *args, **kwargs):
         GenericBucket.__init__(self, "artist", *args, **kwargs)
+        
+    def _genID(self, data):
+        return "%s"%uuid.uuid4()
