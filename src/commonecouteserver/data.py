@@ -62,11 +62,11 @@ class GenericBucket(object):
         return "%s:::%s"%(datetime.utcnow().isoformat(), uuid.uuid4())
 
     def _getNewObject(self, data):
-        if self.client.get(data['id_txt']).exists():
+        if self.bucket.get(data['id_txt']).exists():
             abort(400, {"error": "object %s already exists, won't overwrite, please use PUT"})
         else:
             encodeddata = self._encode(data)
-            return self._get_new_object(encodeddata)
+            return self.bucket.new(encodeddata['id_txt'], encodeddata)
         
     def create(self, data, links=[]):
         """
@@ -124,7 +124,7 @@ class GenericBucket(object):
         Deletes a record
         """
         try:
-            response = self.bucket.get(key).get_data()
+            response = self.bucket.get(key)
             if not response.exists():
                 abort(404, {"error": "object not found in database"})
             else:
