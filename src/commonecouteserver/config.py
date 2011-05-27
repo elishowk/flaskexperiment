@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2011 CommOnEcoute
+# Copyright (c) 2011 CommOnEcoute http://commonecoute.com
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published by
@@ -12,12 +12,17 @@
 #
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
-    
-from commonecouteserver import coeserver
-import argparse 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Development COE server script')
-    #parser.add_argument('debug', help='activate bottle debug mode')
-    #coeserver.debug = True
-    coeserver.run()
+
+class DefaultConfig(object):
+    DEBUG = False
+    TESTING = False
+
+class ProductionConfig(DefaultConfig):
+    pass
+
+class DevelopmentConfig(DefaultConfig):
+    DEBUG = True
+
+class TestingConfig(DefaultConfig):
+    TESTING = True

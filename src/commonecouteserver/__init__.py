@@ -14,12 +14,16 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/agpl.html>
 
 from commonecouteserver.data import Track, Event, User, Post, Product, Genre, Artist
-from commonecouteserver import logger
+from commonecouteserver.config import *
 
 from flask import Flask, request, jsonify
-#from flaskext.jsonify import jsonify
+
 coeserver = Flask(__name__)
-logger.setlogger(coeserver)
+coeserver.config.from_object('commonecouteserver.config.DefaultConfig')
+coeserver.config.from_envvar('COESERVER_SETTINGS')
+
+#from commonecouteserver import logger
+#logger.setlogger(coeserver)
 
 coebuckets={
     'track': Track(),
