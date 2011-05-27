@@ -81,8 +81,6 @@ def get_keys_user():
     
 @coeserver.route('/post/', methods=['GET'])
 def get_keys_post():
-    res=coebuckets['post'].keys()
-    coeserver.logger.debug(res)
     return jsonify(coebuckets['post'].keys())
 
 @coeserver.route('/genre/', methods=['GET'])
