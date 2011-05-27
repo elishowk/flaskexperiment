@@ -132,6 +132,9 @@ class GenericBucket(object):
         except Exception, exc:
             abort(500, {"error": "%s"%exc})
         
+    def keys(self):
+        return { 'keys': self.bucket.get_keys() }
+
 
 class Track(GenericBucket):
     def __init__(self, *args, **kwargs):

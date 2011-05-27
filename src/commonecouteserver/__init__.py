@@ -65,8 +65,39 @@ def options_handler():
 @coeserver.errorhandler(404)
 def not_found(error):
     return u"circulez, rien à voir", 404
+
+### GET bucket keys
+@coeserver.route('/track/', methods=['GET'])
+def get_keys_track():
+    return jsonify(coebuckets['track'].keys())
     
-# GET handlers
+@coeserver.route('/event/', methods=['GET'])
+def get_keys_event():
+    return jsonify(coebuckets['event'].keys())
+    
+@coeserver.route('/user/', methods=['GET'])
+def get_keys_user():
+    return jsonify(coebuckets['user'].keys())
+    
+@coeserver.route('/post/', methods=['GET'])
+def get_keys_post():
+    res=coebuckets['post'].keys()
+    coeserver.logger.debug(res)
+    return jsonify(coebuckets['post'].keys())
+
+@coeserver.route('/genre/', methods=['GET'])
+def get_keys_genre():
+    return jsonify(coebuckets['genre'].keys())
+    
+@coeserver.route('/product/', methods=['GET'])
+def get_keys_product(id):
+    return jsonify(coebuckets['product'].keys())
+ 
+@coeserver.route('/artist/', methods=['GET'])
+def get_keys_artist(id):
+    return jsonify(coebuckets['artist'].keys())
+
+### GET records handlers
 @coeserver.route('/track/<id>/', methods=['GET'])
 def get_track(id):
     return jsonify(coebuckets['track'].read(id))
