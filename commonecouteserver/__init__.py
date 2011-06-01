@@ -16,7 +16,7 @@
 from commonecouteserver.data import Track, Event, User, Post, Product, Genre, Artist
 from commonecouteserver.config import *
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, json, make_response
 
 coeserver = Flask(__name__)
 coeserver.config.from_object('commonecouteserver.config.DefaultConfig')
@@ -37,6 +37,14 @@ coebuckets={
 
 def _request_body(request):
     return request.json
+
+def _json_response(responsedict={}, statuscode=200):
+    return make_response(
+        json.dumps(dict(responsedict)),
+        statuscode,
+        None,
+        'application/json',
+        'application/json')
 
 @coeserver.after_request
 def after_request(response):
@@ -64,127 +72,127 @@ def before_request():
 
 @coeserver.route('/*', methods=['OPTIONS'])
 def options_handler():
-    return jsonify({})
+    return _json_response({})
     
 @coeserver.errorhandler(404)
 def not_found(error):
-    return jsonify({})
+    return _json_response({}, 404)
 
 ### GET bucket keys
 @coeserver.route('/track/', methods=['GET'])
 def get_keys_track():
-    return jsonify(coebuckets['track'].keys())
+    return _json_response(coebuckets['track'].keys())
     
 @coeserver.route('/event/', methods=['GET'])
 def get_keys_event():
-    return jsonify(coebuckets['event'].keys())
+    return _json_response(coebuckets['event'].keys())
     
 @coeserver.route('/user/', methods=['GET'])
 def get_keys_user():
-    return jsonify(coebuckets['user'].keys())
+    return _json_response(coebuckets['user'].keys())
     
 @coeserver.route('/post/', methods=['GET'])
 def get_keys_post():
-    return jsonify(coebuckets['post'].keys())
+    return _json_response(coebuckets['post'].keys())
 
 @coeserver.route('/genre/', methods=['GET'])
 def get_keys_genre():
-    return jsonify(coebuckets['genre'].keys())
+    return _json_response(coebuckets['genre'].keys())
     
 @coeserver.route('/product/', methods=['GET'])
 def get_keys_product(id):
-    return jsonify(coebuckets['product'].keys())
+    return _json_response(coebuckets['product'].keys())
  
 @coeserver.route('/artist/', methods=['GET'])
 def get_keys_artist(id):
-    return jsonify(coebuckets['artist'].keys())
+    return _json_response(coebuckets['artist'].keys())
 
 ### GET records handlers
 @coeserver.route('/track/<id>/', methods=['GET'])
 def get_track(id):
-    return jsonify(coebuckets['track'].read(id))
+    return _json_response(coebuckets['track'].read(id))
     
 @coeserver.route('/event/<id>/', methods=['GET'])
 def get_event(id):
-    return jsonify(coebuckets['event'].read(id))
+    return _json_response(coebuckets['event'].read(id))
     
 @coeserver.route('/user/<id>/', methods=['GET'])
 def get_user(id):
-    return jsonify(coebuckets['user'].read(id))
+    return _json_response(coebuckets['user'].read(id))
     
 @coeserver.route('/post/<id>/', methods=['GET'])
 def get_post(id):
-    return jsonify(coebuckets['post'].read(id))
+    return _json_response(coebuckets['post'].read(id))
 
 @coeserver.route('/genre/<id>/', methods=['GET'])
 def get_genre(id):
-    return jsonify(coebuckets['genre'].read(id))
+    return _json_response(coebuckets['genre'].read(id))
     
 @coeserver.route('/product/<id>/', methods=['GET'])
 def get_product(id):
-    return jsonify(coebuckets['product'].read(id))
+    return _json_response(coebuckets['product'].read(id))
  
 @coeserver.route('/artist/<id>/', methods=['GET'])
 def get_artist(id):
-    return jsonify(coebuckets['artist'].read(id))
+    return _json_response(coebuckets['artist'].read(id))
    
 # POST handlers
 @coeserver.route('/track/', methods=['POST'])
 def post_track():
-    return jsonify(coebuckets['track'].create(_request_body(request)))
+    return _json_response(coebuckets['track'].create(_request_body(request)))
     
 @coeserver.route('/event/', methods=['POST'])
 def post_event():
-    return jsonify(coebuckets['event'].create(_request_body(request)))
+    return _json_response(coebuckets['event'].create(_request_body(request)))
     
 @coeserver.route('/user/', methods=['POST'])
 def post_user():
-    return jsonify(coebuckets['user'].create(_request_body(request)))
+    return _json_response(coebuckets['user'].create(_request_body(request)))
     
 @coeserver.route('/post/', methods=['POST'])
 def post_post():
-    return jsonify(coebuckets['post'].create(_request_body(request)))
+    return _json_response(coebuckets['post'].create(_request_body(request)))
 
 @coeserver.route('/genre/', methods=['POST'])
 def post_genre():
-    return jsonify(coebuckets['genre'].create(_request_body(request)))
+    return _json_response(coebuckets['genre'].create(_request_body(request)))
     
 @coeserver.route('/product/', methods=['POST'])
 def post_product():
-    return jsonify(coebuckets['product'].create(_request_body(request)))
+    return _json_response(coebuckets['product'].create(_request_body(request)))
     
 @coeserver.route('/artist/', methods=['POST'])
 def post_artist():
-    return jsonify(coebuckets['artist'].create(_request_body(request)))
+    return _json_response(coebuckets['artist'].create(_request_body(request)))
     
 # PUT handlers
 @coeserver.route('/track/<id>/', methods=['PUT'])
 def put_track(id):
-    return jsonify(coebuckets['track'].update(id, _request_body(request)))
+    return _json_response(coebuckets['track'].update(id, _request_body(request)))
     
 @coeserver.route('/event/<id>/', methods=['PUT'])
 def put_event(id):
-    return jsonify(coebuckets['event'].update(id, _request_body(request)))
+    return _json_response(coebuckets['event'].update(id, _request_body(request)))
     
 @coeserver.route('/user/<id>/', methods=['PUT'])
 def put_user(id):
-    return jsonify(coebuckets['user'].update(id, _request_body(request)))
+    return _json_response(coebuckets['user'].update(id, _request_body(request)))
     
 @coeserver.route('/post/<id>/', methods=['PUT'])
 def put_post(id):
-    return jsonify(coebuckets['post'].update(id, _request_body(request)))
+    return _json_response(coebuckets['post'].update(id, _request_body(request)))
 
 @coeserver.route('/genre/<id>/', methods=['PUT'])
 def put_genre(id):
-    return jsonify(coebuckets['genre'].update(id, _request_body(request)))
+    return _json_response(coebuckets['genre'].update(id, _request_body(request)))
     
 @coeserver.route('/product/<id>/', methods=['PUT'])
 def put_product(id):
-    return jsonify(coebuckets['product'].update(id, _request_body(request)))
+    return _json_response(coebuckets['product'].update(id, _request_body(request)))
 
 @coeserver.route('/artist/<id>/', methods=['PUT'])
 def put_artist(id):
-    return jsonify(coebuckets['artist'].update(id, _request_body(request)))
+    return _json_response(coebuckets['artist'].update(id, _request_body(request)))
   
 # DELETE HANDLERS
 @coeserver.route('/track/<id>/', methods=['DELETE'])
