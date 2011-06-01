@@ -8,7 +8,6 @@ version = '0.1'
 
 install_requires = [
     'flask',
-    'flask-jsonify'
     'riak',
     'protobuf',
     'werkzeug',
@@ -18,7 +17,8 @@ install_requires = [
 ]
 
 
-setup(name='commonecouteserver',
+setup(
+    name='commonecouteserver',
     version=version,
     description="Core CommOnEcoute Server",
     long_description=README,
@@ -32,8 +32,8 @@ setup(name='commonecouteserver',
     author_email='elishowk@nonutc.fr',
     url='http://commonecoute.com',
     license='GNU AGPL v3',
-    packages=find_packages('src'),
-    package_dir = {'': 'src'},
+    packages=find_packages('commonecouteserver'),
+    package_dir = {'': 'commonecouteserver'},
     include_package_data=True,
     scripts = ['bin/server.py'],
     zip_safe=False,
