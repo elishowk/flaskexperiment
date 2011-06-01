@@ -1,2 +1,12 @@
 include README
 include agpl-license.txt
+include COEserver.wsgi
+include deps.yaml
+include fabfile.py
+include site.yaml
+include roles/dev.yaml
+include roles/production.yaml
+include roles/staging.yaml
+include config/development.cfg
+include config/production.cfg
+include config/testing.cfg

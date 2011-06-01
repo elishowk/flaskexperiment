@@ -10,7 +10,7 @@ install_requires = [
     'flask',
     'riak',
     'protobuf',
-    'werkzeug',
+    'silk-deployment',
     'simplejson'
     # For more details, see:
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
@@ -32,10 +32,10 @@ setup(
     author_email='elishowk@nonutc.fr',
     url='http://commonecoute.com',
     license='GNU AGPL v3',
-    packages=find_packages('commonecouteserver'),
-    package_dir = {'': 'commonecouteserver'},
+    packages=find_packages('.'),
+    #package_dir = {'': '.'},
     include_package_data=True,
-    scripts = ['bin/server.py'],
+    scripts = ['bin/coeserver.py'],
     zip_safe=False,
     install_requires=install_requires,
     #entry_points={
