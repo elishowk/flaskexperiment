@@ -1,0 +1,15 @@
+site: api.commonecoute.fr
+site_version: "0.1"
+runtime: python2.7
+silk_version: 1
+#the wsgi app that will serve requests at "/".
+#In form module:function
+wsgi_app: commonecouteserver:coeserver
+#list of dirs to serve statically
+#each item is a dictionary with url_path and system_path keys
+#url_path: the url at which the directory should be served.  Remember to end it
+#with a slash
+#system_path: relative path (from site_root) of directory that should be served
+static_dirs:
+- url_path: /static/
+  system_path: coeserver/static/

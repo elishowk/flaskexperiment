@@ -1,0 +1,41 @@
+#on 'silk push -R <rolename>', deploy to these hosts
+push_hosts:
+    - ubuntu@ec2-46-137-50-30.eu-west-1.compute.amazonaws.com
+#listen for these host headers in nginx
+listen_hosts:
+    - ec2-46-137-50-30.eu-west-1.compute.amazonaws.com
+#options to pass to gunicorn on the command line
+gunicorn:
+    workers: 1
+    log-level: debug
+    name: coeserver
+    debug: true
+    #you can optionally specify how nginx talks to gunicorn
+    #default is a unix socket
+    #bind: unix:/tmp/somewhere.sock
+    #bind: localhost:5000
+# Environment variables to pass in to the process.  You can just leave
+# 'env' blank if you don't need to pass any variables in.
+env:
+    COESERVER_SETTINGS: /srv/api.commonecoute.fr/config/development.cfg
+    #DJANGO_DB_HOST: db.mysite.com
+    #DJANGO_DB_NAME: some_db_name
+    #DJANGO_DB_USER: some_db_user
+    #DJANGO_DB_PASS: some_db_pwd
+    #DJANGO_DEBUG: "0"
+# If you don't like environment variables, you can import
+# silk and have it read all these settings from the blame.yaml file
+# instead.  See silk/extras/django_local_settings.py for an example.
+# 'app_config' isn't hard-coded anywhere in Silk, but it's a nice 
+# convention for passing in role-specific config
+app_config:
+  #COESERVER_SETTINGS: /srv/api.commonecoute.fr/config/development.cfg
+  DEBUG: true
+  #DATABASES:
+  #  default: 
+  #    ENGINE: django.db.backends.postgresql_psycopg2
+  #    NAME: mydb
+  #    USER: me_duh
+  #    PASSWORD: super_secure_pwd
+  #    HOST:
+  #    PORT: 
