@@ -7,6 +7,6 @@ include site.yaml
 include roles/dev.yaml
 include roles/production.yaml
 include roles/staging.yaml
-include config/development.cfg
-include config/production.cfg
-include config/testing.cfg
+include flaskconfig/development.cfg
+include flaskconfig/production.cfg
+include flaskconfig/testing.cfg

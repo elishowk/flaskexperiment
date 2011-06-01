@@ -64,11 +64,11 @@ def before_request():
 
 @coeserver.route('/*', methods=['OPTIONS'])
 def options_handler():
-    return jsonify(None)
+    return jsonify({})
     
 @coeserver.errorhandler(404)
 def not_found(error):
-    return u"circulez, rien à voir", 404
+    return jsonify({})
 
 ### GET bucket keys
 @coeserver.route('/track/', methods=['GET'])

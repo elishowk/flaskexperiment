@@ -44,7 +44,7 @@ class GenericBucket(object):
         encodeddata = {}
         for (key, value) in data.iteritems():
             if isinstance(value, unicode):
-                encodeddata[key] = value.encode('utf-8', errors='replace')
+                encodeddata[key] = value.encode('utf-8', 'replace')
             else:
                 encodeddata[key] = value
         return encodeddata
@@ -94,30 +94,27 @@ class GenericBucket(object):
         """
         Returns json object for a given key
         """
-        try:
-            response = self.bucket.get(key.encode('utf-8', errors='replace')).get_data()
-            return response or abort(404, {})
-        except Exception, exc:
-            abort(500, {"error": "%s"%exc})        
+        if isinstance(key, unicode):
+            key = key.encode('utf-8', 'replace')
+        response = self.bucket.get(key).get_data()
+        return response or abort(404)
+      
         
     def update(self, key, update_data, links=[]):
         """
         Gets an updates an item for database
         Returns the updated json object
         """
-        try:
-            update_object = self.bucket.get(key)
-            if not update_object.exists():
-                abort(404, {"error": "object not found in database"})
-            old_data = update_object.get_data()
-            data = old_data.update(update_data)
-            update_object.set_data(self._encode(data))
-            # eventually links to other objects
-            self._add_links(update_object, links)
-            #update_object.store()
-            return update_object.get_data() or abort(500, {})
-        except Exception, exc:
-            abort(500, {"error": "%s"%exc})
+        update_object = self.bucket.get(key)
+        if not update_object.exists():
+            abort(404, {"error": "object not found in database"})
+        old_data = update_object.get_data()
+        data = old_data.update(update_data)
+        update_object.set_data(self._encode(data))
+        # eventually links to other objects
+        self._add_links(update_object, links)
+        #update_object.store()
+        return update_object.get_data() or abort(500, {})
 
     def delete(self, key):
         """
