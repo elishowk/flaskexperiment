@@ -10,7 +10,7 @@ install_requires = [
     'flask',
     'riak',
     'protobuf',
-    'silk-deployment',
+    #'silk-deployment',
     'simplejson'
     # For more details, see:
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
