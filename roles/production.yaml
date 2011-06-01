@@ -16,7 +16,7 @@ gunicorn:
     #bind: localhost:8004
 #environment variables to pass in to the process
 env:
-    COESERVER_SETTINGS: /srv/api.commonecoute.fr/config/production.cfg
+    COESERVER_SETTINGS: /srv/api.commonecoute.fr/flaskconfig/production.cfg
     #DJANGO_DB_HOST: db.mysite.com
     #DJANGO_DB_NAME: some_db_name
     #DJANGO_DB_USER: some_db_user

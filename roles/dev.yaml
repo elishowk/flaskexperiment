@@ -16,7 +16,7 @@ gunicorn:
     #bind: localhost:5000
 #environment variables to pass in to the process
 env:
-    COESERVER_SETTINGS: /home/elishowk/code/COEserver/config/development.cfg
+    COESERVER_SETTINGS: /home/elishowk/code/COEserver/flaskconfig/development.cfg
     #DJANGO_DB_HOST: db.mysite.com
     #DJANGO_DB_NAME: some_db_name
     #DJANGO_DB_USER: some_db_user
@@ -28,7 +28,6 @@ env:
 # 'app_config' isn't hard-coded anywhere in Silk, but it's a nice 
 # convention for passing in role-specific config
 app_config:
-  #COESERVER_SETTINGS: /home/elishowk/code/COEserver/config/development.cfg
   DEBUG: true
   #DATABASES:
   #  default: 
