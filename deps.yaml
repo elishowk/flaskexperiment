@@ -1,5 +1,6 @@
 #ubuntu packages required by this site
 apt_packages:
+  - curl
   - git-core
   - python-dev
   - python-protobuf

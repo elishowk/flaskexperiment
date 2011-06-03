@@ -1,6 +1,6 @@
 site: api.commonecoute.fr
 site_version: "0.1"
-runtime: python2.7
+runtime: python2.6
 silk_version: 1
 #the wsgi app that will serve requests at "/".
 #In form module:function

@@ -13,7 +13,7 @@ gunicorn:
     #you can optionally specify how nginx talks to gunicorn
     #default is a unix socket
     #bind: unix:/tmp/somewhere.sock
-    #bind: localhost:5000
+    bind: localhost:5000
 #environment variables to pass in to the process
 env:
     COESERVER_SETTINGS: /home/elishowk/code/COEserver/flaskconfig/development.cfg
