@@ -11,5 +11,5 @@ python_packages:
   - meld3
   - git+https://github.com/elishowk/flask.git
 riak:
-    deb: http://downloads.basho.com/riak-search/CURRENT/riak-search_0.14.0-1_i386.deb
+    deb: http://downloads.basho.com/riak-search/CURRENT/riak-search_0.14.2-1_i386.deb
     python: https://github.com/basho/riak-python-client.git
