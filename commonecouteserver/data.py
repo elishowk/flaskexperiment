@@ -19,6 +19,9 @@ import riak
 import uuid
 from datetime import datetime
 
+class ObjectExistsException(Exception):
+    pass
+
 class GenericBucket(object):
     def __init__(self, bucketname, port=8087):
         """
@@ -63,7 +66,7 @@ class GenericBucket(object):
 
     def _getNewObject(self, data):
         if self.bucket.get(data['id_txt']).exists():
-            abort(400, {"error": "object %s already exists, won't overwrite, please use PUT"})
+            raise(ObjectExistsException())
         else:
             encodeddata = self._encode(data)
             return self.bucket.new(encodeddata['id_txt'], encodeddata)
@@ -75,20 +78,18 @@ class GenericBucket(object):
         Returns the json object created
         """
         if not self.client.is_alive():
-            abort(500, {"error": "database is dead"})
+            return {'response': {"error": "database is dead"}, 'statuscode': 500}
         try:
             if 'id_txt' not in data:
                 data['id_txt'] = self._genID(data)
-            
             new_object = self._getNewObject(data)
             # eventually links to other objects
             self._addLinks(new_object, links)
             # Save the object to Riak.
-            return new_object.store().get_data()
+            return {'response':new_object.store().get_data()}
             #return new_object.get_key()
-        except Exception, exc:
-            abort(500, {"error": "%s"%exc})
-            #return make_response((json.dumps({"error": "%s"%exc}), 500, None, 'application/json', 'application/json', False))
+        except ObjectExistsException, existsexc:
+            return {'response': {"error": "database is dead"}, 'statuscode': 400}
         
     def read(self, key):
         """
@@ -97,7 +98,7 @@ class GenericBucket(object):
         if isinstance(key, unicode):
             key = key.encode('utf-8', 'replace')
         response = self.bucket.get(key).get_data()
-        return response or abort(404)
+        return {'response': response} or abort(404)
       
         
     def update(self, key, update_data, links=[]):
@@ -107,30 +108,27 @@ class GenericBucket(object):
         """
         update_object = self.bucket.get(key)
         if not update_object.exists():
-            abort(404, {"error": "object not found in database"})
+            abort(404)
         old_data = update_object.get_data()
         data = old_data.update(update_data)
         update_object.set_data(self._encode(data))
         # eventually links to other objects
         self._add_links(update_object, links)
         #update_object.store()
-        return update_object.get_data() or abort(500, {})
+        return {'response': update_object.get_data()} or abort(404)
 
     def delete(self, key):
         """
         Deletes a record
         """
-        try:
-            response = self.bucket.get(key)
-            if not response.exists():
-                abort(404, {"error": "object not found in database"})
-            else:
-                response.delete()
-        except Exception, exc:
-            abort(500, {"error": "%s"%exc})
+        response = self.bucket.get(key)
+        if not response.exists():
+            abort(404)
+        else:
+            response.delete()
         
     def keys(self):
-        return { 'keys': self.bucket.get_keys() }
+        return { 'response': self.bucket.get_keys() }
 
 
 class Track(GenericBucket):
