@@ -36,8 +36,6 @@ coebuckets={
 }
 
 def _request_body(request):
-    if request.method=='PUT':
-        coeserver.logger.debug(request.json)
     return request.json
 
 def _json_response(response={}, statuscode=200):
@@ -58,7 +56,7 @@ def after_request(response):
     if request.method == 'OPTIONS':
         response.headers['Access-Control-Allow-Headers'] = request.headers['Access-Control-Request-Headers']
         #response.headers['Accept'] = "application/json"
-        response.headers['Access-Control-Allow-Methods'] = "GET, POST, OPTIONS, PUT"
+        response.headers['Access-Control-Allow-Methods'] = "GET, POST, OPTIONS, PUT, DELETE"
     return response
     
 @coeserver.before_request
@@ -206,35 +204,35 @@ def put_artist(id):
 @coeserver.route('/track/<id>/', methods=['DELETE'])
 def delete_track(id):
     coebuckets['track'].delete(id)
-    _json_response()
+    return _json_response()
     
 @coeserver.route('/event/<id>/', methods=['DELETE'])
 def delete_event(id):
     coebuckets['event'].delete(id)
-    _json_response()
+    return _json_response()
     
 @coeserver.route('/user/<id>/', methods=['DELETE'])
 def delete_user(id):
     coebuckets['user'].delete(id)
-    _json_response()
+    return _json_response()
     
 @coeserver.route('/post/<id>/', methods=['DELETE'])
 def delete_post(id):
     coebuckets['post'].delete(id)
-    _json_response()
+    return _json_response()
 
 @coeserver.route('/genre/<id>/', methods=['DELETE'])
 def delete_genre(id):
     coebuckets['genre'].delete(id)
-    _json_response()
+    return _json_response()
     
 @coeserver.route('/product/<id>/', methods=['DELETE'])
 def delete_product(id):
     coebuckets['product'].delete(id)  
-    _json_response()
+    return _json_response()
 
 @coeserver.route('/artist/<id>/', methods=['DELETE'])
 def delete_artist(id):
     coebuckets['artist'].delete(id)
-    _json_response()
+    return _json_response()
     

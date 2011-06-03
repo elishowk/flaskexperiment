@@ -89,7 +89,7 @@ class GenericBucket(object):
             return {'response':new_object.store().get_data()}
             #return new_object.get_key()
         except ObjectExistsException, existsexc:
-            return {'response': {"error": "database is dead"}, 'statuscode': 400}
+            return {'response': {"error": "record already exists"}, 'statuscode': 400}
         
     def read(self, key):
         """
@@ -124,6 +124,8 @@ class GenericBucket(object):
         """
         Deletes a record
         """
+        if isinstance(key, unicode):
+            key = key.encode('utf-8', 'replace')
         response = self.bucket.get(key)
         if not response.exists():
             abort(404)
