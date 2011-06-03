@@ -36,6 +36,8 @@ coebuckets={
 }
 
 def _request_body(request):
+    if request.method=='PUT':
+        coeserver.logger.debug(request.json)
     return request.json
 
 def _json_response(response={}, statuscode=200):
@@ -62,7 +64,7 @@ def after_request(response):
 @coeserver.before_request
 def before_request():
     """
-    checks each bucket 
+    checks each bucket's state
     """
     for bucketname, bucketinstance in coebuckets.iteritems():
         if not bucketinstance.client.is_alive():
@@ -174,31 +176,31 @@ def post_artist():
 # PUT handlers
 @coeserver.route('/track/<id>/', methods=['PUT'])
 def put_track(id):
-    return _json_response(coebuckets['track'].update(id, _request_body(request)))
+    return _json_response(**coebuckets['track'].update(id, _request_body(request)))
     
 @coeserver.route('/event/<id>/', methods=['PUT'])
 def put_event(id):
-    return _json_response(coebuckets['event'].update(id, _request_body(request)))
+    return _json_response(**coebuckets['event'].update(id, _request_body(request)))
     
 @coeserver.route('/user/<id>/', methods=['PUT'])
 def put_user(id):
-    return _json_response(coebuckets['user'].update(id, _request_body(request)))
+    return _json_response(**coebuckets['user'].update(id, _request_body(request)))
     
 @coeserver.route('/post/<id>/', methods=['PUT'])
 def put_post(id):
-    return _json_response(coebuckets['post'].update(id, _request_body(request)))
+    return _json_response(**coebuckets['post'].update(id, _request_body(request)))
 
 @coeserver.route('/genre/<id>/', methods=['PUT'])
 def put_genre(id):
-    return _json_response(coebuckets['genre'].update(id, _request_body(request)))
+    return _json_response(**coebuckets['genre'].update(id, _request_body(request)))
     
 @coeserver.route('/product/<id>/', methods=['PUT'])
 def put_product(id):
-    return _json_response(coebuckets['product'].update(id, _request_body(request)))
+    return _json_response(**coebuckets['product'].update(id, _request_body(request)))
 
 @coeserver.route('/artist/<id>/', methods=['PUT'])
 def put_artist(id):
-    return _json_response(coebuckets['artist'].update(id, _request_body(request)))
+    return _json_response(**coebuckets['artist'].update(id, _request_body(request)))
   
 # DELETE HANDLERS
 @coeserver.route('/track/<id>/', methods=['DELETE'])

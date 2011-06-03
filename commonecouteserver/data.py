@@ -113,12 +113,11 @@ class GenericBucket(object):
         update_object = self.bucket.get(key)
         if not update_object.exists():
             abort(404)
-        old_data = update_object.get_data()
-        data = old_data.update(update_data)
+        data = update_object.get_data()
+        data.update(update_data)
         update_object.set_data(self._encode(data))
         # eventually links to other objects
-        self._add_links(update_object, links)
-        #update_object.store()
+        self._addLinks(update_object, links)
         return {'response': update_object.get_data()} or abort(404)
 
     def delete(self, key):
