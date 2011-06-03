@@ -98,7 +98,9 @@ class GenericBucket(object):
         if isinstance(key, unicode):
             key = key.encode('utf-8', 'replace')
         response = self.bucket.get(key).get_data()
-        return {'response': response} or abort(404)
+        if response is None:
+            abort(404)
+        return {'response': response }
       
         
     def update(self, key, update_data, links=[]):
@@ -106,6 +108,8 @@ class GenericBucket(object):
         Gets an updates an item for database
         Returns the updated json object
         """
+        if isinstance(key, unicode):
+            key = key.encode('utf-8', 'replace')
         update_object = self.bucket.get(key)
         if not update_object.exists():
             abort(404)

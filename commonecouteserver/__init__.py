@@ -52,9 +52,11 @@ def _json_response(response={}, statuscode=200):
 
 @coeserver.after_request
 def after_request(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = "*"
     if request.method == 'OPTIONS':
-        response.headers['Access-Control-Allow-Headers'] = 'content-type'
+        response.headers['Access-Control-Allow-Headers'] = request.headers['Access-Control-Request-Headers']
+        #response.headers['Accept'] = "application/json"
+        response.headers['Access-Control-Allow-Methods'] = "GET, POST, OPTIONS, PUT"
     return response
     
 @coeserver.before_request
