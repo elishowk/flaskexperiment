@@ -54,8 +54,8 @@ def _json_response(response={}, statuscode=200):
 def after_request(response):
     response.headers['Access-Control-Allow-Origin'] = "*"
     if request.method == 'OPTIONS':
-        response.headers['Access-Control-Allow-Headers'] = request.headers['Access-Control-Request-Headers']
-        #response.headers['Accept'] = "application/json"
+        if 'Access-Control-Request-Headers' in request.headers:
+            response.headers['Access-Control-Allow-Headers'] = request.headers['Access-Control-Request-Headers']
         response.headers['Access-Control-Allow-Methods'] = "GET, POST, OPTIONS, PUT, DELETE"
     return response
     
