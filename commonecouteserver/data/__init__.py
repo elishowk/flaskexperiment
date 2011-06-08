@@ -19,23 +19,31 @@ import riak
 import uuid
 from datetime import datetime
 
+import os
+DB_HOST = os.environ.get('COESERVER_DB_HOST') or '127.0.0.1'
+DB_PORT = int(os.environ.get('COESERVER_DB_PORT')) or 8087
+
+import logging
+logger = logging.getLogger('TinaAppLogger')
+
 class ObjectExistsException(Exception):
     pass
 
 class GenericBucket(object):
-    def __init__(self, bucketname, port=8087):
+    def __init__(self, bucketname, port=DB_PORT, host=DB_HOST):
         """
         initiate a riak bucket
         """
         self.bucketname = bucketname
-        self._connect(bucketname, port)
+        self._connect(bucketname, port, host)
 
-    def _connect(self, bucketname, port=8087):
+    def _connect(self, bucketname, port, host):
         """
         Connects to a particular bucket
         on the defaut port of riak protobuf interface
         """
-        self.client = riak.RiakClient(port=port, transport_class=riak.RiakPbcTransport)
+        print "connecting to %s on port %d"%(host, port)
+        self.client = riak.RiakClient(host=host, port=port, transport_class=riak.RiakPbcTransport)
         #self.client.set_r(1)
         #self.client.set_w(1)
         self.bucket = self.client.bucket(bucketname)
