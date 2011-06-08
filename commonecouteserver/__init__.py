@@ -20,10 +20,10 @@ from flask import Flask, request, json, make_response
 
 coeserver = Flask(__name__)
 coeserver.config.from_object('commonecouteserver.config.DefaultConfig')
-coeserver.config.from_envvar('COESERVER_SETTINGS')
-
-#from commonecouteserver import logger
-#logger.setlogger(coeserver)
+try:
+    coeserver.config.from_envvar('COESERVER_SETTINGS')
+except Exception:
+    print "COESERVER_SETTINGS not found, using commonecouteserver.config.DefaultConfig"
 
 coebuckets={
     'track': Track(),
