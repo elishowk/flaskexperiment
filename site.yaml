@@ -12,4 +12,4 @@ wsgi_app: commonecouteserver:coeserver
 #system_path: relative path (from site_root) of directory that should be served
 static_dirs:
 - url_path: /static/
-  system_path: coeserver/static/
+  system_path: static/

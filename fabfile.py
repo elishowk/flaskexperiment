@@ -9,16 +9,16 @@ def push():
     Override silk's main function adding riaksearch installing and configuring
     """
     print "OVERIDDEN PUSH FUNCTION"
-    #silk.fabfile.archive()
-    #silk.fabfile.install_deps()
+    silk.fabfile.archive()
+    silk.fabfile.install_deps()
     #install_riak()
-    #silk.fabfile.push_code()
-    #silk.fabfile.write_config()
-    #silk.fabfile.switch()
-    #silk.fabfile.restart()
-    riaksearchrestart()
-    riaksearchconfig()
-    #silk.fabfile.cleanup()
+    silk.fabfile.push_code()
+    silk.fabfile.write_config()
+    silk.fabfile.switch()
+    silk.fabfile.restart()
+    #riaksearchrestart()
+    #riaksearchconfig()
+    silk.fabfile.cleanup()
     
 def update():
     """
@@ -30,6 +30,9 @@ def update():
     silk.fabfile.write_config()
     silk.fabfile.switch()
     silk.fabfile.reload()
+    silk.fabfile.cleanup()
+
+def cleanup():
     silk.fabfile.cleanup()
 
 def install_riak():
@@ -60,6 +63,7 @@ def riaksearchrestart():
 
 def riaksearchconfig():
     print "ACTIVATING INDEXING ON ALL RIAK BUCKETS"
+    sudo("service riaksearch start")
     for bucket in ['track','event','user','post','product','genre','artist']:
         run("""
         curl -X PUT -H "content-type:application/json" http://localhost:8098/riak/%s --data '{"props":{"precommit":[{"mod":"riak_search_kv_hook","fun":"precommit"}]}}'

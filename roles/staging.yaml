@@ -1,9 +1,9 @@
 #on 'silk push -R <rolename>', deploy to these hosts
 push_hosts:
-    - ubuntu@ec2-46-137-35-119.eu-west-1.compute.amazonaws.com
+    - ubuntu@ec2-46-51-148-86.eu-west-1.compute.amazonaws.com
 #listen for these host headers in nginx
 listen_hosts:
-    - ec2-46-137-35-119.eu-west-1.compute.amazonaws.com
+    - ec2-46-51-148-86.eu-west-1.compute.amazonaws.com
 #options to pass to gunicorn on the command line
 gunicorn:
     workers: 1
@@ -13,13 +13,13 @@ gunicorn:
     #you can optionally specify how nginx talks to gunicorn
     #default is a unix socket
     #bind: unix:/tmp/somewhere.sock
-    #bind: localhost:5000
-# Environment variables to pass in to the process.  You can just leave
+    #bind: localhost:8000
+# Environment variables to pass in to the process. You can just leave
 # 'env' blank if you don't need to pass any variables in.
 env:
-    COESERVER_SETTINGS: /srv/api.commonecoute.fr/flaskconfig/development.cfg
-    #DJANGO_DB_HOST: db.mysite.com
-    #DJANGO_DB_NAME: some_db_name
+    COESERVER_SETTINGS: flaskconfig/development.cfg
+    COESERVER_DB_HOST: ec2-46-51-146-192.eu-west-1.compute.amazonaws.com
+    COESERVER_DB_PORT: 8087
     #DJANGO_DB_USER: some_db_user
     #DJANGO_DB_PASS: some_db_pwd
     #DJANGO_DEBUG: "0"
