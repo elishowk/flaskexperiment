@@ -11,13 +11,12 @@ def push():
     print "OVERIDDEN PUSH FUNCTION"
     silk.fabfile.archive()
     silk.fabfile.install_deps()
-    #install_riak()
+    riaksearch_install()
     silk.fabfile.push_code()
     silk.fabfile.write_config()
     silk.fabfile.switch()
     silk.fabfile.restart()
-    #riaksearchrestart()
-    #riaksearchconfig()
+    riaksearch_config()
     silk.fabfile.cleanup()
     
 def update():
@@ -35,11 +34,13 @@ def update():
 def cleanup():
     silk.fabfile.cleanup()
 
-def install_riak():
+def riaksearch_install():
     """
     installs riaksearch package and python lib
     """
     print "INSTALLING RIAK SEARCH"
+    print "STOPING RIAK SEARCH"
+    sudo("service riaksearch stop")
     build_dir = "/tmp/riak_build"
     gitdirname = "pythonriak"
     if not exists(build_dir, use_sudo=True):
@@ -55,15 +56,16 @@ def install_riak():
         #install into the virtualenv
         sudo('%s setup.py install' % os.path.join(env.envdir, 'bin', 'python'))
     sudo('rm -rf %s' % build_dir)
-
-def riaksearchrestart():
-    print "RESTARTING RIAK SEARCH"
-    sudo("service riaksearch stop")
+    print "STARTING RIAK SEARCH"
     sudo("service riaksearch start")
 
-def riaksearchconfig():
+def riaksearch_config():
+    try:
+        sudo("riaksearch ping")
+    except:
+        print "HEM, RIAK DOES NOT RESPOND WELL TO PING, RESTARTING..."
+        sudo("service riaksearch start")
     print "ACTIVATING INDEXING ON ALL RIAK BUCKETS"
-    sudo("service riaksearch start")
     for bucket in ['track','event','user','post','product','genre','artist']:
         run("""
         curl -X PUT -H "content-type:application/json" http://localhost:8098/riak/%s --data '{"props":{"precommit":[{"mod":"riak_search_kv_hook","fun":"precommit"}]}}'
