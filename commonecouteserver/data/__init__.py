@@ -21,10 +21,11 @@ from datetime import datetime
 
 import os
 DB_HOST = os.environ.get('COESERVER_DB_HOST') or '127.0.0.1'
-DB_PORT = int(os.environ.get('COESERVER_DB_PORT')) or 8087
+DB_PORT = os.environ.get('COESERVER_DB_PORT') or 8087
+DB_PORT = int(DB_PORT)
 
 import logging
-logger = logging.getLogger('TinaAppLogger')
+logger = logging.getLogger('coeserver')
 
 class ObjectExistsException(Exception):
     pass
@@ -42,7 +43,7 @@ class GenericBucket(object):
         Connects to a particular bucket
         on the defaut port of riak protobuf interface
         """
-        print "connecting to %s on port %d"%(host, port)
+        #print "connecting to %s on port %d"%(host, port)
         self.client = riak.RiakClient(host=host, port=port, transport_class=riak.RiakPbcTransport)
         #self.client.set_r(1)
         #self.client.set_w(1)
