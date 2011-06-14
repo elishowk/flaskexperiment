@@ -127,7 +127,7 @@ class GenericBucket(object):
         update_object.set_data(self._encode(data))
         # eventually links to other objects
         self._addLinks(update_object, links)
-        return {'response': update_object.get_data()} or abort(404)
+        return {'response': update_object.get_data()} or {'response': {"error": "could not update record"}, 'statuscode': 404}
 
     def delete(self, key):
         """
@@ -141,8 +141,8 @@ class GenericBucket(object):
         else:
             response.delete()
         
-    def keys(self):
-        return { 'response': self.bucket.get_keys() }
+    def readallkeys(self):
+        return {'response': self.bucket.get_keys()}
 
 
 class Track(GenericBucket):

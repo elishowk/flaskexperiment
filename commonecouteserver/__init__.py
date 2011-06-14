@@ -38,17 +38,27 @@ coebuckets={
 def _request_body(request):
     return request.json
 
-def _json_response(response={}, statuscode=200):
+def _json_response(response=None, statuscode=None):
     if response is None:
         response={}
-    if not isinstance(response, dict):
-        response=dict(response)
-    return make_response(
-        json.dumps(response),
-        statuscode,
-        None,
-        'application/json',
-        'application/json')
+    if statuscode is None:
+        statuscode=200
+    try:
+        serialized = json.dumps(response)
+        return make_response(
+            serialized,
+            statuscode,
+            None,
+            'application/json',
+            'application/json'
+        )
+    except Exception, exc:
+        coeserver.logger.warning("json serializer failed : %s"%exc)
+        serialized = str(response)
+        return make_response(
+            serialized,
+            statuscode
+        )
 
 @coeserver.after_request
 def after_request(response):
@@ -87,31 +97,31 @@ def not_found(error):
 ### GET bucket keys
 @coeserver.route('/track/', methods=['GET'])
 def get_keys_track():
-    return _json_response(**coebuckets['track'].keys())
+    return _json_response(**coebuckets['track'].readallkeys())
     
 @coeserver.route('/event/', methods=['GET'])
 def get_keys_event():
-    return _json_response(**coebuckets['event'].keys())
+    return _json_response(**coebuckets['event'].readallkeys())
     
 @coeserver.route('/user/', methods=['GET'])
 def get_keys_user():
-    return _json_response(**coebuckets['user'].keys())
+    return _json_response(**coebuckets['user'].readallkeys())
     
 @coeserver.route('/post/', methods=['GET'])
 def get_keys_post():
-    return _json_response(**coebuckets['post'].keys())
+    return _json_response(**coebuckets['post'].readallkeys())
 
 @coeserver.route('/genre/', methods=['GET'])
 def get_keys_genre():
-    return _json_response(**coebuckets['genre'].keys())
+    return _json_response(**coebuckets['genre'].readallkeys())
     
 @coeserver.route('/product/', methods=['GET'])
 def get_keys_product():
-    return _json_response(**coebuckets['product'].keys())
+    return _json_response(**coebuckets['product'].readallkeys())
  
 @coeserver.route('/artist/', methods=['GET'])
 def get_keys_artist():
-    return _json_response(**coebuckets['artist'].keys())
+    return _json_response(**coebuckets['artist'].readallkeys())
 
 ### GET records handlers
 @coeserver.route('/track/<id>/', methods=['GET'])
