@@ -106,11 +106,11 @@ def get_keys_genre():
     return _json_response(**coebuckets['genre'].keys())
     
 @coeserver.route('/product/', methods=['GET'])
-def get_keys_product(id):
+def get_keys_product():
     return _json_response(**coebuckets['product'].keys())
  
 @coeserver.route('/artist/', methods=['GET'])
-def get_keys_artist(id):
+def get_keys_artist():
     return _json_response(**coebuckets['artist'].keys())
 
 ### GET records handlers
