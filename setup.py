@@ -8,9 +8,8 @@ version = '0.1'
 
 install_requires = [
     'flask',
-    'riak',
-    'protobuf',
-    #'silk-deployment',
+    'pymongo',
+    'silk-deployment',
     'simplejson'
     # For more details, see:
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
