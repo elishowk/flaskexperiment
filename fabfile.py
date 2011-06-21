@@ -11,24 +11,23 @@ def push():
     print "OVERIDDEN PUSH FUNCTION"
     silk.fabfile.archive()
     silk.fabfile.install_deps()
-    riaksearch_install()
+    #riaksearch_install()
     silk.fabfile.push_code()
     silk.fabfile.write_config()
     silk.fabfile.switch()
     silk.fabfile.restart()
-    riaksearch_config()
+    #riaksearch_config()
     silk.fabfile.cleanup()
     
 def update():
     """
-    update code and configs, but not deps
-    NOT TESTED
+    update code and configs, but no installs
     """
     silk.fabfile.archive()
     silk.fabfile.push_code()
     silk.fabfile.write_config()
     silk.fabfile.switch()
-    silk.fabfile.reload()
+    silk.fabfile.restart()
     silk.fabfile.cleanup()
 
 def cleanup():
@@ -39,8 +38,8 @@ def riaksearch_install():
     installs riaksearch package and python lib
     """
     print "INSTALLING RIAK SEARCH"
-    print "STOPING RIAK SEARCH"
-    sudo("service riaksearch stop")
+    print "STOPPING RIAK SEARCH"
+    sudo("riaksearch stop")
     build_dir = "/tmp/riak_build"
     gitdirname = "pythonriak"
     if not exists(build_dir, use_sudo=True):
@@ -57,16 +56,12 @@ def riaksearch_install():
         sudo('%s setup.py install' % os.path.join(env.envdir, 'bin', 'python'))
     sudo('rm -rf %s' % build_dir)
     print "STARTING RIAK SEARCH"
-    sudo("service riaksearch start")
+    sudo("riaksearch start")
 
 def riaksearch_config():
-    try:
-        sudo("riaksearch ping")
-    except:
-        print "HEM, RIAK DOES NOT RESPOND WELL TO PING, RESTARTING..."
-        sudo("service riaksearch start")
+    #sudo("riaksearch start")
     print "ACTIVATING INDEXING ON ALL RIAK BUCKETS"
     for bucket in ['track','event','user','post','product','genre','artist']:
         run("""
-        curl -X PUT -H "content-type:application/json" http://localhost:8098/riak/%s --data '{"props":{"precommit":[{"mod":"riak_search_kv_hook","fun":"precommit"}]}}'
-        """%bucket)
+        curl -X PUT -H "content-type:application/json" http://%s:8098/riak/%s --data '{"props":{"precommit":[{"mod":"riak_search_kv_hook","fun":"precommit"}]}}'
+        """%(env.config['env']['COESERVER_DB_HOST'], bucket))
